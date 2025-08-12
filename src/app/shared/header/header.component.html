@@ -1,0 +1,61 @@
+<header class="header">
+  <div class="wrap">
+
+    <!-- Gauche : logo -->
+    <a class="logo" href="/" aria-label="Airbnb home">
+      <span class="logo-dot"></span>
+      <span class="logo-text">airbnb</span>
+    </a>
+
+    <!-- Centre : barre de recherche -->
+    <div class="search" role="button" tabindex="0" (click)="toggleMobileSearch()">
+      <div class="chip"><span>Lieu</span></div>
+      <div class="divider"></div>
+      <div class="chip hide-sm"><span>Dates</span></div>
+      <div class="divider hide-sm"></div>
+      <div class="chip"><span>Voyageurs</span></div>
+      <button class="search-btn" aria-label="Rechercher">
+        <span class="material-symbols-outlined">search</span>
+      </button>
+    </div>
+
+    <!-- Droite : actions -->
+    <nav class="actions">
+      <a class="host hide-sm" href="#">Devenez hôte</a>
+      <button class="icon-btn" aria-label="Langue / devise">
+        <span class="material-symbols-outlined">public</span>
+      </button>
+
+      <!-- Menu utilisateur -->
+      <button id="userMenuBtn" class="user-menu" (click)="toggleUserMenu()" aria-expanded="{{isUserMenuOpen}}">
+        <span class="material-symbols-outlined">menu</span>
+        <span class="avatar"></span>
+      </button>
+
+      <div id="userMenu" class="user-dropdown" [class.open]="isUserMenuOpen">
+        <a href="#">S’inscrire</a>
+        <a href="#">Se connecter</a>
+        <hr>
+        <a href="#">Mettre mon logement</a>
+        <a href="#">Aide</a>
+      </div>
+    </nav>
+  </div>
+
+  <!-- Mobile : étagère de recherche étendue -->
+  <section class="mobile-search" *ngIf="isMobileSearchOpen">
+    <div class="row">
+      <label>Lieu</label>
+      <input placeholder="Rechercher une destination" />
+    </div>
+    <div class="row">
+      <label>Dates</label>
+      <input type="text" placeholder="Quand ?" />
+    </div>
+    <div class="row">
+      <label>Voyageurs</label>
+      <input type="number" min="1" value="1" />
+    </div>
+    <button class="cta"><span class="material-symbols-outlined">search</span> Rechercher</button>
+  </section>
+</header>

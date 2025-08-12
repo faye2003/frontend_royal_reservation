@@ -1,0 +1,232 @@
+<!-- start page title -->
+<app-pagetitle title="Posts" [breadcrumbItems]="breadCrumbItems"></app-pagetitle>
+
+<div class="row">
+  <div class="col-12">
+    <div class="">
+      <div class="">
+        <div class="d-flex justify-content-end gap-1 mb-4">
+          <div class="">
+            <button (click)="openModal(content, null, 'add')"  class="btn btn-primary cursor-pointer">
+              <i class="fa fa-plus"></i> Nouveau Post</button>
+          </div>
+          <div class="">
+          </div>
+        </div>
+        <form class="needs-validation" (ngSubmit)="loadPosts()" [formGroup]="searchForm" novalidate>
+          <div class="row">
+            <div class="col-md-3 mb-3">
+              <label for="validationCustom01">Titre</label>
+              <input formControlName="titre" name="titre" type="text" class="form-control" placeholder="Titre">
+            </div>
+            <div class="col-md-3 mb-3">
+              <label for="validationCustomUsername">Description</label>
+              <input formControlName="description" name="description" type="text" class="form-control" placeholder="Description">
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-3 mb-3">
+              <label for="validationCustom02">Ville</label>
+              <select class="form-select" type="text" formControlName="ville" name="ville">
+                <option selected>Choisir...</option>
+                <option></option>
+              </select>
+            </div>
+            <div class="col-md-3 mb-3">
+              <label for="validationCustom05">Statut</label>
+              <select class="form-select" type="text" formControlName="statut" name="statut">
+                <option selected value="">Choisir...</option>
+                <option value="A_VENIR">A_VENIR</option>
+                <option value="OUVERTE">OUVERTE</option>
+                <option value="CLOTUREE">CLOTUREE</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <button class="btn btn-primary" type="submit">Rechercher</button>
+          </div>
+        </form><br>
+
+        <div class="table-responsive">
+          <table class="table align-middle datatable dt-responsive table-check nowrap"
+            style="border-collapse: collapse; border-spacing: 0 8px; width: 100%;">
+            <thead>
+              <tr class="bg-transparent">
+                <th>Titre</th>
+                <th>Description</th>
+                <th>Statut</th>
+                <th>Ville</th>
+                <th>Slug</th>
+                <th class="text-center">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (item of posts; track $index) {
+                <tr>
+                  <td class="text-body">
+                    {{ item.titre }}
+                  </td>
+                  <td class="text-body">
+                    {{ item.slug }}
+                  </td>
+                  <td class="text-body">
+                    {{ item.description }}
+                  </td>
+                  <td class="text-body">
+                    {{ item.statut }}
+                  </td>
+                  <td class="text-body">
+                    {{ item.type}}
+                  </td>
+                  <td>
+                    <div class="text-center w-sm">
+                      <a [routerLink]="['/detail-post/', item.id]">
+                        <i class="bx bx-show me-1 text-primary font-size-18"
+                        style="cursor: pointer;" ngbTooltip="Voir" placement="top" aria-hidden="true"></i>
+                      </a>
+                      <i (click)="openModal(content, item, 'update')" class="bx bx-edit me-1 text-primary font-size-18"
+                        style="cursor: pointer;" ngbTooltip="Modifier" placement="top" aria-hidden="true"></i>                    
+                      <i (click)="openModal(confirmation, item, 'delete')"
+                        class="bx bx-trash me-1 text-danger font-size-18 ml-2" style="cursor: pointer;"
+                        ngbTooltip="Supprimer" placement="top" aria-hidden="true"></i>
+                    </div>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+        <div class="row justify-content-md-between align-items-md-center mt-2">
+          <div class="col-sm-12 col-md-3">
+            <div class="dataTables_info mb-2" aria-live="polite">
+              Affichage de {{(page - 1) * pageSize + 1}} à
+              {{(page - 1) * pageSize + pageSize > totalItems ? totalItems : (page - 1) * pageSize + pageSize}} sur
+              {{totalItems}} Posts
+            </div>
+          </div>
+          <div class="col-sm-12 col-md-3">
+            <div class="dataTables_length" id="tickets-table_length">
+              <label class="d-inline-flex align-items-center">Afficher
+                <select name="tickets-table_length" aria-controls="tickets-table" name="pageSize" [(ngModel)]="pageSize"
+                (input)="itemPagination($event)" class="form-control form-control-sm mx-2">
+                  <option value="5">5</option>
+                  <option value="10">10</option>
+                  <option value="25">25</option>
+                  <option value="50">50</option>
+                  <option value="100">100</option>
+                </select>
+              </label>
+            </div>
+          </div>
+          <div class="col-sm-12 col-md-6">
+            <div class="text-md-right float-md-end pagination-rounded">
+              <ngb-pagination [collectionSize]="totalItems" [(page)]="page" [pageSize]="pageSize"
+                (pageChange)="loadPosts()">
+              </ngb-pagination>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<ng-template #content role="document" let-modal>
+  <div class="modal-header border-bottom-0">
+    <h5 *ngIf="actionModal == 'add'" class="modal-title mt-0">Ajouter Une Post</h5>
+    <h5 *ngIf="actionModal == 'update'" class="modal-title mt-0">Modifier Une Post</h5>
+    <button type="button" class="btn-close" (click)="closeModal('Cross click')"></button>
+  </div>
+  <div class="modal-body">
+    <form (ngSubmit)="savePost()" [formGroup]="editForm">
+      <div class="row">
+        <div class="col-6 mb-3">
+          <label class="control-label mb-0" for="">Titre</label>
+          <input class="form-control" placeholder="Entrer le titre" type="text" name="titre" formControlName="titre"
+            [ngClass]="{'is-invalid': submitted && form['titre'].errors}" />
+          <div *ngIf="submitted && form['titre'].errors">
+            <div class="text-danger" style="font-size: 12px;">L'objectif est obligatoire
+            </div>
+          </div>
+        </div>
+        <div class="col-6 mb-3">
+          <label class="control-label mb-0" for="">Description</label>
+          <input class="form-control" placeholder="Entrer la description" type="text" name="description" formControlName="description"
+            [ngClass]="{'is-invalid': submitted && form['description'].errors}" />
+          <div *ngIf="submitted && form['description'].errors">
+            <div class="text-danger" style="font-size: 12px;">La description est obligatoire
+            </div>
+          </div>
+        </div>
+        <div class="col-12 mt-3">
+          <input class="form-check-input" type="checkbox" id="statut" name="statut" formControlName="statut"
+          [ngClass]="{'is-invalid': submitted && form['statut'].errors}" >
+          <label class="form-check-label" for="statut">&nbsp; Est Actif</label>
+        </div>
+      </div>
+      <div class="mb-2" *ngIf="errorMessage">
+        <div class="text-danger" style="font-size: 12px;">{{errorMessage}}</div>
+      </div>
+      <div *ngIf="errorMessage500" class="mb-2">
+        <div class="text-danger" style="font-size: 12px;">Vous ne pouvez pas accéder à cette ressource,
+          veuillez contacter votre administrateur</div>
+      </div>
+
+     <div class="modal-footer">
+      <button type="submit" class="btn btn-primary" [disabled]="isSubmitted">
+        <span *ngIf="!isSubmitted">Enregistrer</span>
+        <span *ngIf="isSubmitted" class="spinner-border spinner-border-sm"></span>
+      </button>
+      <button type="button" class="btn btn-light" (click)="modal.dismiss()">
+        Annuler
+      </button>
+    </div>
+
+    </form>
+  </div>
+</ng-template>
+
+
+<ng-template #confirmation role="document" let-modal>
+  <div class="modal-header">
+    <h5 class="modal-title mt-0">Confirmation</h5>
+    <button type="button" class="btn-close" aria-hidden="true" (click)="closeModal('Cross click')"></button>
+  </div>
+  <div class="modal-body">
+    <div class="row">
+      <div class="col-12">
+        <p>
+          <span *ngIf="actionModal == 'delete'">Veuillez confirmer la suppression de: </span>
+          <span *ngIf="actionModal == 'activer'">Veuillez confirmer l'activation de: </span>
+          <span *ngIf="actionModal == 'desactiver'">Veuillez confirmer la désactivation de:
+          </span>
+          <span class="text-sonatel fw-bold ml-2"></span>
+        </p>
+      </div>
+    </div>
+    <div class="mb-2" *ngIf="errorMessage">
+      <div class="text-danger" style="font-size: 12px;">{{errorMessage}}</div>
+    </div>
+    <div *ngIf="errorMessage500" class="mb-2">
+      <div class="text-danger" style="font-size: 12px;">Vous ne pouvez pas acceder a cette ressource
+      </div>
+    </div>
+    <div class="row">
+      <div class="text-end col-md-6">
+        <button (click)="closeModal('ok')" class="btn btn-dark" id="btn-save-event">
+          Annuler
+        </button>
+      </div>
+      <div class="text-start col-md-6">
+        <button (click)="action()" type="submit" class="btn btn-primary" id="btn-save-event">
+          Confirmer
+        </button>
+      </div>
+    </div>
+  </div>
+</ng-template>
+<!-- end page title -->
+
+
+<!-- end page title -->
