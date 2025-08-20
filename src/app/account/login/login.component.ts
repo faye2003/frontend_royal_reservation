@@ -49,7 +49,7 @@ export class LoginComponent implements OnInit {
     }
     //Validation Set
     this.loginForm = this.formBuilder.group({
-      email: ['admin@themesbrand.com', [Validators.required, Validators.email]],
+      email: ['admin@royalreservation.com', [Validators.required, Validators.email]],
       password: ['123456', [Validators.required]],
     });
     // get return url from route parameters or default to '/'
